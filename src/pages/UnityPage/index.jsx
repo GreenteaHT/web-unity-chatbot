@@ -1,7 +1,7 @@
 import { Unity, useUnityContext } from "react-unity-webgl";
 
 function UnityPage() {
-  const { unityProvider } = useUnityContext({
+  const { isLoaded, loadingProgression, unityProvider } = useUnityContext({
     loaderUrl: "unityBuild/WebBuild.loader.js",
     dataUrl: "unityBuild/WebBuild.data",
     frameworkUrl: "unityBuild/WebBuild.framework.js",
@@ -10,7 +10,14 @@ function UnityPage() {
 
   return (
     <div className="flex justify-center items-center w-screen h-screen">
-      <Unity unityProvider={unityProvider} className="w-4/6 h-4/6" />
+      {!isLoaded && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-80 text-white text-lg">
+          Loading... {Math.round(loadingProgression * 100)}%
+        </div>
+      )}
+      <div className="flex w-4/6 h-4/6 shadow-lg bg-white">
+        <Unity unityProvider={unityProvider} className="w-full h-full" />
+      </div>
     </div>
   );
 }
