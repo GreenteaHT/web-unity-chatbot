@@ -1,65 +1,61 @@
-import { useState } from "react";
+import { useEffect, useMemo } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { Unity, useUnityContext } from "react-unity-webgl";
+import { ArrowLeft } from "lucide-react";
+import useCharacterStore from "../../store/useCharacterStore";
 
-function UnityPage() {
-  const [messages, setMessages] = useState([]);
-  const [inputMessage, setInputMessage] = useState("");
+export default function UnityPage() {
+  const navigate = useNavigate();
+  const { name } = useParams();
+  const { characters } = useCharacterStore();
 
-  const { isLoaded, loadingProgression, unityProvider } = useUnityContext({
-    loaderUrl: "unityBuild/WebBuild.loader.js",
-    dataUrl: "unityBuild/WebBuild.data",
-    frameworkUrl: "unityBuild/WebBuild.framework.js",
-    codeUrl: "unityBuild/WebBuild.wasm",
-  });
+  const character = useMemo(() => {
+    return Object.values(characters).find(
+      (character) => character.name.toLowerCase() === name?.toLowerCase()
+    );
+  }, [characters, name]);
 
-  const handleSendMessage = () => {
-    if (inputMessage.trim()) {
-      setMessages((prev) => [...prev, { sender: "You", text: inputMessage }]);
-      setInputMessage("");
-    }
-  };
+  const { isLoaded, loadingProgression, unityProvider, unload } =
+    useUnityContext({
+      loaderUrl: "/unityBuild/WebBuild.loader.js",
+      dataUrl: "/unityBuild/WebBuild.data",
+      frameworkUrl: "/unityBuild/WebBuild.framework.js",
+      codeUrl: "/unityBuild/WebBuild.wasm",
+    });
 
-  const handleInputMessage = (event) => {
-    setInputMessage(event.target.value);
-  }
+  useEffect(() => {
+    return () => {
+      unload();
+    };
+  }, [unload]);
 
   return (
-    <div className="flex justify-center items-center w-screen h-screen">
+    <div className="bg-white min-h-screen relative">
+      <div className="fixed top-0 left-0 right-0 z-10 bg-white shadow-sm">
+        <div className="max-w-2xl mx-auto px-4 py-3 flex items-center">
+          <button
+            className="mr-4 text-gray-600 hover:text-gray-900"
+            onClick={() => navigate(-1)}
+          >
+            <ArrowLeft size={24} />
+          </button>
+          <span className="text-xl font-semibold text-indigo-600">
+            {character.name}
+          </span>
+        </div>
+      </div>
+
       {!isLoaded && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-80 text-white text-lg">
+        <div className="absolute inset-0 z-20 flex items-center justify-center bg-black bg-opacity-80 text-white text-lg">
           Loading... {Math.round(loadingProgression * 100)}%
         </div>
       )}
-      <div className="flex w-4/6 h-4/6 shadow-lg bg-white">
-        <Unity unityProvider={unityProvider} className="w-full h-full" />
 
-        <div className="w-1/3 p-4 bg-gray-200 flex flex-col">
-          <div className="flex-1 overflow-y-auto p-2 border border-gray-300 rounded bg-white mb-4">
-            {messages.map((message, index) => (
-              <div key={index} className="mb-2 text-black">
-                <strong>{message.sender}:</strong> <span>{message.text}</span>
-              </div>
-            ))}
-          </div>
-          <div className="flex">
-            <input
-              type="text"
-              value={inputMessage}
-              onChange={handleInputMessage}
-              placeholder="Type a message..."
-              className="flex-1 p-2 border border-gray-300 rounded-l focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <button
-              onClick={handleSendMessage}
-              className="p-2 bg-blue-500 text-white rounded-r hover:bg-blue-600 transition"
-            >
-              Send
-            </button>
-          </div>
+      <div className="pt-16 pb-8 flex justify-center">
+        <div className="w-full max-w-2xl h-[calc(100vh-6rem)] bg-gray-200 relative rounded-lg shadow-md">
+          <Unity unityProvider={unityProvider} className="w-full h-full" />
         </div>
       </div>
     </div>
   );
 }
-
-export default UnityPage;
