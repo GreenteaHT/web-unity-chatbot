@@ -7,7 +7,7 @@ import MainPage from "../pages/MainPage";
 import CreateCharacter from "../pages/CreateCharacter";
 import CharacterProfile from "../pages/CharacterProfile";
 import UnityPage from "../pages/UnityPage";
-import UserProfile from "../pages/UserProfile";
+import UserProfilePage from "../pages/UserProfilePage";
 import MyChatPage from "../pages/MyChatPage";
 import NotFoundPage from "../pages/NotFoundPage";
 import CharacterWrapper from "./wrappers/CharacterWrapper";
@@ -24,7 +24,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/userProfile",
-    element: <UserProfile />,
+    element: <UserProfilePage />,
   },
   {
     path: "/myChat",
