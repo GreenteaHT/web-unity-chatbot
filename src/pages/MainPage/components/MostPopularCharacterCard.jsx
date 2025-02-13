@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { DEFAULT_IMAGE_URL } from "@/utils/constants";
 
 export default function MostPopularCharacterCard({ character }) {
   const navigate = useNavigate();
@@ -8,15 +9,11 @@ export default function MostPopularCharacterCard({ character }) {
       className="bg-white rounded-lg shadow-sm overflow-hidden cursor-pointer"
       onClick={() => navigate(`/character/${character.name}/profile`)}
     >
-      {character.thumbnail ? (
-        <img
-          src={character.thumbnail}
-          alt={character.name}
-          className="p-2 w-full h-80 object-cover rounded-3xl"
-        />
-      ) : (
-        <div className="w-full h-24 bg-gray-200"></div>
-      )}
+      <img
+        src={character.images?.[0] || DEFAULT_IMAGE_URL}
+        alt={character.name}
+        className="p-2 w-full h-80 object-cover rounded-3xl"
+      />
 
       <div className="p-3 space-y-2">
         <div className="flex justify-between items-start">
@@ -25,7 +22,7 @@ export default function MostPopularCharacterCard({ character }) {
         </div>
 
         <p className="text-sm text-gray-500 line-clamp-2">
-          {character.introduction}
+          {character.description}
         </p>
 
         <div className="flex flex-wrap gap-2">

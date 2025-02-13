@@ -1,13 +1,11 @@
 export const initialCharactersData = {
   mikhe: {
     name: "Mikhe",
-    thumbnail: "/image/mike.png",
-    images: ["/image/mike.png"],
-    introduction: `The former owner and employee of the now-defunct maid café, "Café Stella."
+    images: ["/image/mike.png", "/image/mike2.png"],
+    description: `The former owner and employee of the now-defunct maid café, "Café Stella."
 She has given up on everything, living in a state of lethargy, but remains realistic and sharp-tongued.
 Even after paying off her debts, she has no idea what to do next.`,
-    Greeting: "Hi",
-    description: `
+    backgroundStory: `
 Tsukiji Mikhe (築地 ミッケ, Tsukiji Mikhe)
 
 🏠 Owner and staff of Café Stella
@@ -64,47 +62,59 @@ Dislikes:
 - 💀 Sick of maid cafés.
 - 🥱 Doesn't want to work, just wants to relax.
 - 💸 No clue how to make money from now on.`,
-    definition: "",
     tags: ["realist", "blunt", "high-self-esteem", "high-pride"],
+    dialogues: [],
+    lorebook: [],
+    modelType: "vrm",
+    modelUrl: "",
+    fallbackImage: null,
   },
   characterA: {
     name: "A-Chan",
-    thumbnail: "/image/characterA.png",
-    images: "/image/characterA.png",
-    introduction: "description",
-    Greeting: "Hi",
+    images: ["/image/characterA.png"],
     description: "Description A",
-    definition: "",
     tags: ["A"],
+    backgroundStory: "",
+    dialogues: [],
+    lorebook: [],
+    modelType: "vrm",
+    modelUrl: "",
+    fallbackImage: null,
   },
   characterB: {
     name: "B-Chan",
-    thumbnail: "/image/characterB.jpg",
-    images: "/image/characterB.jpg",
-    introduction: "description",
-    Greeting: "Hi",
+    images: ["/image/characterB.jpg"],
     description: "Description B",
-    definition: "",
     tags: ["A"],
+    backgroundStory: "",
+    dialogues: [],
+    lorebook: [],
+    modelType: "vrm",
+    modelUrl: "",
+    fallbackImage: null,
   },
   characterC: {
     name: "C-Chan",
-    thumbnail: "/image/characterC.png",
-    images: "/image/characterC.png",
-    introduction: "description",
-    Greeting: "Hi",
-    description: "Description B",
-    definition: "",
+    images: ["/image/characterC.png"],
+    description: "Description C",
     tags: ["A"],
+    backgroundStory: "",
+    dialogues: [],
+    lorebook: [],
+    modelType: "vrm",
+    modelUrl: "",
+    fallbackImage: null,
   },
   characterD: {
     name: "D-Chan",
-    thumbnail: "/image/characterD.jpg",
-    images: "/image/characterD.jpg",
-    introduction: "description",
-    Greeting: "Hi",
+    images: ["/image/characterD.jpg"],
     description: "Description D",
-    definition: "",
     tags: ["A"],
+    backgroundStory: "",
+    dialogues: [],
+    lorebook: [],
+    modelType: "vrm",
+    modelUrl: "",
+    fallbackImage: null,
   },
 };
