@@ -7,17 +7,18 @@ import {
   ChevronRight,
   ChevronLeft,
 } from "lucide-react";
-import NavigationBar from "../../components/NavigationBar";
+import NavigationBar from "@/components/NavigationBar";
 import { useNavigate } from "react-router-dom";
-import useCharacterStore from "../../store/useCharacterStore";
-
-const MAX_CHARACTER_NAME_LENGTH = 20;
-const MAX_CHARACTER_DESCRIPTION_LENGTH = 500;
-const MAX_CHARACTER_BACKGROUND_LENGTH = 5000;
-const MAX_DIALOGUE_USER_MESSAGE_LENGTH = 200;
-const MAX_DIALOGUE_RESPONSE_LENGTH = 1000;
-const MAX_LOREBOOK_TITLE_LENGTH = 100;
-const MAX_LOREBOOK_CONTENT_LENGTH = 1000;
+import useCharacterStore from "@/store/useCharacterStore";
+import {
+  MAX_CHARACTER_NAME_LENGTH,
+  MAX_CHARACTER_DESCRIPTION_LENGTH,
+  MAX_CHARACTER_BACKGROUND_LENGTH,
+  MAX_DIALOGUE_USER_MESSAGE_LENGTH,
+  MAX_DIALOGUE_RESPONSE_LENGTH,
+  MAX_LOREBOOK_TITLE_LENGTH,
+  MAX_LOREBOOK_CONTENT_LENGTH,
+} from "@/utils/constants";
 
 const TOTAL_STEPS = 5;
 const STEPS = [
