@@ -11,6 +11,7 @@ import {
 
 import useCharacterStore from "../../store/useCharacterStore";
 import Avatar from "./Avatar";
+import { DEFAULT_IMAGE_URL } from "@/utils/constants.js";
 
 export default function CharacterProfile() {
   const navigate = useNavigate();
@@ -24,9 +25,11 @@ export default function CharacterProfile() {
   }, [characters, name]);
 
   const slides = [
-    { type: "image", url: character.images[0] || "/default-thumbnail.png" },
-    { type: "image", url: "/image/mike2.png" },
-    { type: "vrm", url: "/model/mikhe.vrm" },
+    ...(character.images?.map((image) => ({
+      type: "image",
+      url: image,
+    })) || [{ type: "image", url: DEFAULT_IMAGE_URL }]),
+    ...(character.vrmUrl ? [{ type: "vrm", url: character.vrmUrl }] : []),
   ];
 
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
@@ -77,18 +80,22 @@ export default function CharacterProfile() {
             </Canvas>
           )}
 
-          <button
-            onClick={handlePrev}
-            className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-black/20 rounded-full backdrop-blur-sm"
-          >
-            <ChevronLeft size={24} color="white" />
-          </button>
-          <button
-            onClick={handleNext}
-            className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-black/20 rounded-full backdrop-blur-sm"
-          >
-            <ChevronRight size={24} color="white" />
-          </button>
+          {slides.length > 1 && (
+            <>
+              <button
+                onClick={handlePrev}
+                className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-black/20 rounded-full backdrop-blur-sm"
+              >
+                <ChevronLeft size={24} color="white" />
+              </button>
+              <button
+                onClick={handleNext}
+                className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-black/20 rounded-full backdrop-blur-sm"
+              >
+                <ChevronRight size={24} color="white" />
+              </button>
+            </>
+          )}
 
           <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
             {slides.map((_, index) => (
@@ -108,7 +115,7 @@ export default function CharacterProfile() {
           <div className="space-y-4">
             <h1 className="text-3xl font-bold">{character.name}</h1>
             <p className="text-gray-600">by {character.creator}</p>
-            <p className="text-lg text-gray-700">{character.description}</p>
+            <p className="text-lg text-gray-700">{character.backgroundStory}</p>
             <div className="flex flex-wrap gap-2">
               {character.tags.map((tag, index) => (
                 <span
