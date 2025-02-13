@@ -9,26 +9,38 @@ import {
 } from "lucide-react";
 import NavigationBar from "../../components/NavigationBar";
 import { useNavigate } from "react-router-dom";
+import useCharacterStore from "../../store/useCharacterStore";
 
 const MAX_CHARACTER_NAME_LENGTH = 20;
 const MAX_CHARACTER_DESCRIPTION_LENGTH = 500;
 const MAX_CHARACTER_BACKGROUND_LENGTH = 5000;
+const MAX_DIALOGUE_USER_MESSAGE_LENGTH = 200;
+const MAX_DIALOGUE_RESPONSE_LENGTH = 1000;
+const MAX_LOREBOOK_TITLE_LENGTH = 100;
+const MAX_LOREBOOK_CONTENT_LENGTH = 1000;
 
-const CreateCharacter = () => {
+const TOTAL_STEPS = 5;
+const STEPS = [
+  { index: 1, title: "Basic Info" },
+  { index: 2, title: "Details & Background" },
+  { index: 3, title: "Dialogue Examples" },
+  { index: 4, title: "Lorebook" },
+  { index: 5, title: "3D Models & Scene" },
+];
+
+export default function CreateCharacter() {
   const navigate = useNavigate();
+  const addCharacter = useCharacterStore((state) => state.addCharacter);
+
   const [currentStep, setCurrentStep] = useState(1);
   const [characterData, setCharacterData] = useState({
     name: "",
-    imageFile: null,
+    images: null,
     description: "",
     tags: [],
     backgroundStory: "",
-    dialogues: [
-      // { userMessage: '', characterResponse: '' }, ...
-    ],
-    lorebook: [
-      // { title: '', content: '' }, ...
-    ],
+    dialogues: [],
+    lorebook: [],
     modelType: "vrm",
     modelUrl: "",
     fallbackImage: null,
@@ -36,38 +48,75 @@ const CreateCharacter = () => {
   const [tempTagValue, setTempTagValue] = useState("");
   const fileInputRef = useRef(null);
 
-  const totalSteps = 5;
-
-  const steps = [
-    { number: 1, title: "Basic Info" },
-    { number: 2, title: "Details & Background" },
-    { number: 3, title: "Dialogue Examples" },
-    { number: 4, title: "Lorebook" },
-    { number: 5, title: "3D Models & Scene" },
-  ];
-
   const handleNextStep = () =>
-    setCurrentStep((prev) => Math.min(prev + 1, totalSteps));
+    setCurrentStep((prev) => Math.min(prev + 1, TOTAL_STEPS));
   const handlePrevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 1));
+
   const handleAddDialog = () => {
     setCharacterData((prev) => ({
       ...prev,
-      dialogues: [...prev.dialogues, 1],
+      dialogues: [
+        ...prev.dialogues,
+        { userMessage: "", characterResponse: "" },
+      ],
     }));
   };
+
+  const handleDialogueChange = (index, field, value) => {
+    setCharacterData((prev) => {
+      const newDialogues = [...prev.dialogues];
+      newDialogues[index] = { ...newDialogues[index], [field]: value };
+      return { ...prev, dialogues: newDialogues };
+    });
+  };
+
+  const handleRemoveDialogue = (index) => {
+    setCharacterData((prev) => {
+      const newDialogues = prev.dialogues.filter((_, i) => i !== index);
+      return { ...prev, dialogues: newDialogues };
+    });
+  };
+
+  const handleAddLorebook = () => {
+    setCharacterData((prev) => ({
+      ...prev,
+      lorebook: [...prev.lorebook, { title: "", content: "" }],
+    }));
+  };
+
+  const handleLorebookChange = (index, field, value) => {
+    setCharacterData((prev) => {
+      const newLorebook = [...prev.lorebook];
+      newLorebook[index] = { ...newLorebook[index], [field]: value };
+      return { ...prev, lorebook: newLorebook };
+    });
+  };
+
+  const handleRemoveLorebook = (index) => {
+    setCharacterData((prev) => {
+      const newLorebook = prev.lorebook.filter((_, i) => i !== index);
+      return { ...prev, lorebook: newLorebook };
+    });
+  };
+
   const handleAddTag = () => {
     if (
       tempTagValue.trim() &&
       !characterData.tags.includes(tempTagValue.trim())
     ) {
-      const newTags = [...characterData.tags, tempTagValue.trim()];
-      setCharacterData((prev) => ({ ...prev, tags: newTags }));
+      setCharacterData((prev) => ({
+        ...prev,
+        tags: [...prev.tags, tempTagValue.trim()],
+      }));
     }
     setTempTagValue("");
   };
+
   const handleRemoveTag = (tagToRemove) => {
-    const newTags = characterData.tags.filter((tag) => tag !== tagToRemove);
-    setCharacterData((prev) => ({ ...prev, tags: newTags }));
+    setCharacterData((prev) => ({
+      ...prev,
+      tags: prev.tags.filter((tag) => tag !== tagToRemove),
+    }));
   };
 
   const handleFileChange = (event) => {
@@ -81,7 +130,7 @@ const CreateCharacter = () => {
       reader.onload = () => {
         setCharacterData((prev) => ({
           ...prev,
-          imageFile: reader.result,
+          images: [reader.result],
         }));
       };
       reader.readAsDataURL(file);
@@ -92,6 +141,12 @@ const CreateCharacter = () => {
     event.preventDefault();
     const file = event.dataTransfer.files[0];
     handleFileChange({ target: { files: [file] } });
+  };
+
+  const handleSubmit = () => {
+    const key = characterData.name.trim();
+    addCharacter(key, characterData);
+    navigate(`/character/${key}`);
   };
 
   return (
@@ -108,23 +163,23 @@ const CreateCharacter = () => {
       <div className="w-full bg-white border-b">
         <div className="max-w-2xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between mb-2">
-            {steps.map((step) => (
+            {STEPS.map((step) => (
               <div
-                key={step.number}
+                key={step.index}
                 className={`flex flex-col items-center ${
-                  currentStep >= step.number
+                  currentStep >= step.index
                     ? "text-indigo-600"
                     : "text-gray-400"
                 }`}
               >
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center mb-1 ${
-                    currentStep >= step.number
+                    currentStep >= step.index
                       ? "bg-indigo-600 text-white"
                       : "bg-gray-200"
                   }`}
                 >
-                  {step.number}
+                  {step.index}
                 </div>
                 <span className="text-xs text-center">{step.title}</span>
               </div>
@@ -134,7 +189,7 @@ const CreateCharacter = () => {
             <div
               className="h-1 bg-indigo-600 rounded-full transition-all duration-300"
               style={{
-                width: `${((currentStep - 1) / (totalSteps - 1)) * 100}%`,
+                width: `${((currentStep - 1) / (TOTAL_STEPS - 1)) * 100}%`,
               }}
             />
           </div>
@@ -154,12 +209,12 @@ const CreateCharacter = () => {
                   className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2"
                   maxLength={MAX_CHARACTER_NAME_LENGTH}
                   value={characterData.name}
-                  onChange={(e) => {
+                  onChange={(e) =>
                     setCharacterData((prev) => ({
                       ...prev,
                       name: e.target.value,
-                    }));
-                  }}
+                    }))
+                  }
                   placeholder="Enter character name"
                 />
                 <div className="text-right text-sm text-gray-500">
@@ -171,10 +226,10 @@ const CreateCharacter = () => {
                 <span className="text-gray-700 font-medium block mb-2">
                   Character Image
                 </span>
-                {characterData.imageFile ? (
+                {characterData.images ? (
                   <div className="relative">
                     <img
-                      src={characterData.imageFile}
+                      src={characterData.images}
                       alt="Preview"
                       className="rounded-lg w-full max-h-64 object-contain"
                     />
@@ -234,13 +289,12 @@ const CreateCharacter = () => {
                   rows={4}
                   maxLength={MAX_CHARACTER_DESCRIPTION_LENGTH}
                   value={characterData.description}
-                  onChange={(e) => {
+                  onChange={(e) =>
                     setCharacterData((prev) => ({
                       ...prev,
                       description: e.target.value,
-                    }));
-                    console.log(e.target.value);
-                  }}
+                    }))
+                  }
                   placeholder="Describe your character's personality, role, and characteristics"
                 />
                 <div className="text-right text-sm text-gray-500">
@@ -297,6 +351,12 @@ const CreateCharacter = () => {
                   rows={6}
                   maxLength={MAX_CHARACTER_BACKGROUND_LENGTH}
                   value={characterData.backgroundStory}
+                  onChange={(e) =>
+                    setCharacterData((prev) => ({
+                      ...prev,
+                      backgroundStory: e.target.value,
+                    }))
+                  }
                   placeholder="Write your character's background story and history"
                 />
                 <div className="text-right text-sm text-gray-500">
@@ -311,30 +371,67 @@ const CreateCharacter = () => {
         {currentStep === 3 && (
           <div className="space-y-6">
             <div className="space-y-4">
-              {characterData.dialogues.map((index) => (
+              {characterData.dialogues.map((dialogue, index) => (
                 <div
                   key={index}
                   className="bg-white rounded-lg shadow-sm p-4 space-y-3"
                 >
                   <div className="flex justify-between items-start">
                     <span className="text-gray-700 font-medium">
-                      Example Dialog {index}
+                      Example Dialog {index + 1}
                     </span>
-                    <button className="text-gray-400 hover:text-gray-600">
+                    <button
+                      onClick={() => handleRemoveDialogue(index)}
+                      className="text-gray-400 hover:text-gray-600"
+                    >
                       <X size={20} />
                     </button>
                   </div>
                   <div className="space-y-3">
-                    <input
-                      type="text"
-                      className="block w-full rounded-lg border border-gray-300 px-3 py-2"
-                      placeholder="User's message"
-                    />
-                    <textarea
-                      className="block w-full rounded-lg border border-gray-300 px-3 py-2"
-                      rows={3}
-                      placeholder="Character's response"
-                    />
+                    <label className="block">
+                      <span className="text-gray-700">User&apos;s Message</span>
+                      <input
+                        type="text"
+                        className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2"
+                        maxLength={MAX_DIALOGUE_USER_MESSAGE_LENGTH}
+                        value={dialogue.userMessage}
+                        onChange={(e) =>
+                          handleDialogueChange(
+                            index,
+                            "userMessage",
+                            e.target.value
+                          )
+                        }
+                        placeholder="User's message"
+                      />
+                      <div className="text-right text-sm text-gray-500">
+                        {dialogue.userMessage.length} /{" "}
+                        {MAX_DIALOGUE_USER_MESSAGE_LENGTH}
+                      </div>
+                    </label>
+                    <label className="block">
+                      <span className="text-gray-700">
+                        Character&apos;s Response
+                      </span>
+                      <textarea
+                        className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2"
+                        rows={3}
+                        maxLength={MAX_DIALOGUE_RESPONSE_LENGTH}
+                        value={dialogue.characterResponse}
+                        onChange={(e) =>
+                          handleDialogueChange(
+                            index,
+                            "characterResponse",
+                            e.target.value
+                          )
+                        }
+                        placeholder="Character's response"
+                      />
+                      <div className="text-right text-sm text-gray-500">
+                        {dialogue.characterResponse.length} /{" "}
+                        {MAX_DIALOGUE_RESPONSE_LENGTH}
+                      </div>
+                    </label>
                   </div>
                 </div>
               ))}
@@ -353,30 +450,65 @@ const CreateCharacter = () => {
         {currentStep === 4 && (
           <div className="space-y-6">
             <div className="space-y-4">
-              {[1, 2].map((index) => (
+              {characterData.lorebook.map((entry, index) => (
                 <div
                   key={index}
                   className="bg-white rounded-lg shadow-sm p-4 space-y-3"
                 >
                   <div className="flex justify-between items-start">
-                    <input
-                      type="text"
-                      className="text-lg font-medium bg-transparent border-b border-transparent hover:border-gray-300 focus:border-gray-400 focus:outline-none"
-                      placeholder="Entry Title"
-                    />
-                    <button className="text-gray-400 hover:text-gray-600">
+                    <span className="text-gray-700 font-medium">
+                      Example Dialog {index + 1}
+                    </span>
+                    <button
+                      onClick={() => handleRemoveLorebook(index)}
+                      className="text-gray-400 hover:text-gray-600"
+                    >
                       <X size={20} />
                     </button>
                   </div>
-                  <textarea
-                    className="block w-full rounded-lg border border-gray-300 px-3 py-2"
-                    rows={4}
-                    placeholder="Entry content and details"
-                  />
+                  <div className="space-y-3">
+                    <label className="block">
+                      <span className="text-gray-700 font-medium">
+                        Entry Title
+                      </span>
+                      <input
+                        type="text"
+                        className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2"
+                        maxLength={MAX_LOREBOOK_TITLE_LENGTH}
+                        value={entry.title}
+                        onChange={(e) =>
+                          handleLorebookChange(index, "title", e.target.value)
+                        }
+                        placeholder="Entry Title"
+                      />
+                      <div className="text-right text-sm text-gray-500">
+                        {entry.title.length} / {MAX_LOREBOOK_TITLE_LENGTH}
+                      </div>
+                    </label>
+                    <label className="block">
+                      <span className="text-gray-700 font-medium">Content</span>
+                      <textarea
+                        className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2"
+                        rows={4}
+                        maxLength={MAX_LOREBOOK_CONTENT_LENGTH}
+                        value={entry.content}
+                        onChange={(e) =>
+                          handleLorebookChange(index, "content", e.target.value)
+                        }
+                        placeholder="Entry content and details"
+                      />
+                      <div className="text-right text-sm text-gray-500">
+                        {entry.content.length} / {MAX_LOREBOOK_CONTENT_LENGTH}
+                      </div>
+                    </label>
+                  </div>
                 </div>
               ))}
 
-              <button className="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-gray-400 hover:text-gray-700">
+              <button
+                className="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-gray-400 hover:text-gray-700"
+                onClick={handleAddLorebook}
+              >
                 <Plus className="inline mr-2" size={20} />
                 Add Lorebook Entry
               </button>
@@ -391,13 +523,37 @@ const CreateCharacter = () => {
                 3D Model Type
               </span>
               <div className="grid grid-cols-2 gap-4 mb-6">
-                <button className="p-4 border-2 border-indigo-600 rounded-lg text-center space-y-2 bg-indigo-50">
+                <button
+                  className={`p-4 border-2 rounded-lg text-center space-y-2 ${
+                    characterData.modelType === "vrm"
+                      ? "border-indigo-600 bg-indigo-50"
+                      : "border-gray-300"
+                  }`}
+                  onClick={() =>
+                    setCharacterData((prev) => ({
+                      ...prev,
+                      modelType: "vrm",
+                    }))
+                  }
+                >
                   <span className="font-medium text-indigo-600">VRM Model</span>
                   <p className="text-sm text-gray-600">
                     Single character model
                   </p>
                 </button>
-                <button className="p-4 border-2 border-gray-300 rounded-lg text-center space-y-2">
+                <button
+                  className={`p-4 border-2 rounded-lg text-center space-y-2 ${
+                    characterData.modelType === "unity"
+                      ? "border-indigo-600 bg-indigo-50"
+                      : "border-gray-300"
+                  }`}
+                  onClick={() =>
+                    setCharacterData((prev) => ({
+                      ...prev,
+                      modelType: "unity",
+                    }))
+                  }
+                >
                   <span className="font-medium text-gray-700">Unity Scene</span>
                   <p className="text-sm text-gray-600">
                     Full environment setup
@@ -412,6 +568,13 @@ const CreateCharacter = () => {
                 <input
                   type="text"
                   className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2"
+                  value={characterData.modelUrl}
+                  onChange={(e) =>
+                    setCharacterData((prev) => ({
+                      ...prev,
+                      modelUrl: e.target.value,
+                    }))
+                  }
                   placeholder="Enter URL to your VRM model"
                 />
               </label>
@@ -455,10 +618,12 @@ const CreateCharacter = () => {
             Back
           </button>
           <button
-            onClick={handleNextStep}
+            onClick={
+              currentStep === TOTAL_STEPS ? handleSubmit : handleNextStep
+            }
             className="px-6 py-2 bg-indigo-600 text-white rounded-lg flex items-center"
           >
-            {currentStep === totalSteps ? (
+            {currentStep === TOTAL_STEPS ? (
               "Create Character"
             ) : (
               <>
@@ -469,10 +634,8 @@ const CreateCharacter = () => {
           </button>
         </div>
       </div>
-
+      <div className="h-16" />
       <NavigationBar />
     </div>
   );
-};
-
-export default CreateCharacter;
+}
