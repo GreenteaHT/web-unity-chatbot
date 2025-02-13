@@ -1,9 +1,9 @@
-import NavigationBar from "../../components/NavigationBar";
-import AddCustomCharacterButton from "./components/AddCustomCharacterButton";
+import NavigationBar from "@/components/NavigationBar";
+import AddCustomCharacterButton from "@/components/AddCustomCharacterButton";
 import FeaturedCharacterCarousel from "./components/FeaturedCharacterCarousel";
 import MostPopularCharacterCard from "./components/MostPopularCharacterCard";
 import RecentlyAddedCharacterCard from "./components/RecentlyAddedCharacterCard";
-import useCharacterStore from "../../store/useCharacterStore";
+import useCharacterStore from "@/store/useCharacterStore";
 
 export default function MainPage() {
   const { characters } = useCharacterStore();

@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import NavigationBar from "../../components/NavigationBar";
+import NavigationBar from "@/components/NavigationBar";
 
 export default function NotFoundPage({ type }) {
   const navigate = useNavigate();

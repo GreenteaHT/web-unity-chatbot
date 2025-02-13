@@ -1,6 +1,6 @@
 import { Search, Settings } from "lucide-react";
-import NavigationBar from "../../components/NavigationBar";
-import AddCustomCharacterButton from "../MainPage/components/AddCustomCharacterButton";
+import NavigationBar from "@/components/NavigationBar";
+import AddCustomCharacterButton from "@/components/AddCustomCharacterButton";
 
 export default function MyChatPage() {
   const chats = [

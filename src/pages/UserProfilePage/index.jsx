@@ -8,7 +8,7 @@ import {
   LogOut,
   Mail,
 } from "lucide-react";
-import NavigationBar from "../../components/NavigationBar";
+import NavigationBar from "@/components/NavigationBar";
 
 export default function UserProfilePage() {
   const [profiles, setProfiles] = useState([

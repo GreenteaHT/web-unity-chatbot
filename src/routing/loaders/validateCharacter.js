@@ -1,5 +1,5 @@
 import { redirect } from "react-router-dom";
-import useCharacterStore from "../../store/useCharacterStore";
+import useCharacterStore from "@/store/useCharacterStore";
 
 export const validateCharacter = ({ params }) => {
   const { name } = params;

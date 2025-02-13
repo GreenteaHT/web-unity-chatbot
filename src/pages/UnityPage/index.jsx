@@ -2,7 +2,7 @@ import { useEffect, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Unity, useUnityContext } from "react-unity-webgl";
 import { ArrowLeft } from "lucide-react";
-import useCharacterStore from "../../store/useCharacterStore";
+import useCharacterStore from "@/store/useCharacterStore";
 
 export default function UnityPage() {
   const navigate = useNavigate();
