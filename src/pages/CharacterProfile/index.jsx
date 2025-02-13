@@ -9,7 +9,7 @@ import {
   MessageCircle,
 } from "lucide-react";
 
-import useCharacterStore from "../../store/useCharacterStore";
+import useCharacterStore from "@/store/useCharacterStore";
 import Avatar from "./Avatar";
 import { DEFAULT_IMAGE_URL } from "@/utils/constants.js";
 
@@ -17,6 +17,7 @@ export default function CharacterProfile() {
   const navigate = useNavigate();
   const { name } = useParams();
   const { characters } = useCharacterStore();
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
   const character = useMemo(() => {
     return Object.values(characters).find(
@@ -32,8 +33,6 @@ export default function CharacterProfile() {
     ...(character.vrmUrl ? [{ type: "vrm", url: character.vrmUrl }] : []),
   ];
 
-  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
-
   const handlePrev = () => {
     setCurrentSlideIndex((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
   };
@@ -42,7 +41,7 @@ export default function CharacterProfile() {
   };
 
   return (
-    <div className="bg-gray-50 text-gray-900 min-h-screen flex flex-col">
+    <div className="relative min-h-screen bg-gray-50 text-gray-900">
       <div className="fixed top-0 left-0 right-0 z-20 bg-white shadow-sm">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center">
           <button
@@ -57,13 +56,13 @@ export default function CharacterProfile() {
         </div>
       </div>
 
-      <div className="relative w-full max-w-2xl mx-auto mt-16">
-        <div className="relative aspect-square bg-white rounded-lg shadow-md overflow-hidden">
+      <div className="fixed inset-0 z-0 flex justify-center">
+        <div className="w-full max-h-max p-5 max-w-2xl mt-16 relative aspect-square bg-white overflow-hidden">
           {slides[currentSlideIndex].type === "image" ? (
             <img
               src={slides[currentSlideIndex].url}
               alt={`Slide-${currentSlideIndex}`}
-              className="absolute inset-0 w-full h-full object-cover bg-gray-200"
+              className="rounded-lg shadow-md object-cover"
             />
           ) : (
             <Canvas
@@ -96,26 +95,27 @@ export default function CharacterProfile() {
               </button>
             </>
           )}
-
-          <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
-            {slides.map((_, index) => (
-              <div
-                key={index}
-                className={`w-2 h-2 rounded-full ${
-                  currentSlideIndex === index ? "bg-white" : "bg-white/50"
-                }`}
-              />
-            ))}
-          </div>
         </div>
       </div>
 
-      <div className="mt-6 bg-gradient-to-t from-white via-white/95 to-white/80 rounded-t-3xl shadow-lg border-t pb-20">
-        <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
+      <div className="w-full max-w-2xl mx-auto aspect-square"></div>
+      <div className="relative z-10 pt-20">
+        <div className="mx-auto max-w-2xl bg-white/70 backdrop-blur-sm rounded-t-3xl shadow-lg border-t pb-28 px-4 pt-6 ">
           <div className="space-y-4">
             <h1 className="text-3xl font-bold">{character.name}</h1>
             <p className="text-gray-600">by {character.creator}</p>
-            <p className="text-lg text-gray-700">{character.backgroundStory}</p>
+            <div>
+              <h2 className="text-2xl font-semibold mb-2">Description</h2>
+              <p className="text-lg text-gray-700 whitespace-pre-wrap">
+                {character.description}
+              </p>
+            </div>
+            <div>
+              <h2 className="text-2xl font-semibold mb-2">Background Story</h2>
+              <p className="min-h-20 text-lg text-gray-700 whitespace-pre-wrap">
+                {character.backgroundStory}
+              </p>
+            </div>
             <div className="flex flex-wrap gap-2">
               {character.tags.map((tag, index) => (
                 <span
